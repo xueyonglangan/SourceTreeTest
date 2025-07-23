@@ -50,7 +50,7 @@ namespace DataBaseViewWinForm
         }
 
         #region 功能封装方法
-        //查询时间段内对应料号的所有生产数据
+        //查询时间段内对应料号的所有生产数据，分页
         public void SearchProductDetail1()
         {
             // 清空表格
@@ -663,7 +663,7 @@ namespace DataBaseViewWinForm
         #endregion
 
         #region  分页查询相关方法
-
+        //查询时间段内料号数据，分页
         private void LoadDataWithPaging()
         {
             try
