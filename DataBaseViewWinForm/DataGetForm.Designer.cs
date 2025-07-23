@@ -325,18 +325,19 @@ namespace DataBaseViewWinForm
             // 
             // lblPaginationInfo
             // 
+            this.lblPaginationInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPaginationInfo.AutoSize = true;
-            this.lblPaginationInfo.Location = new System.Drawing.Point(1165, 28);
+            this.lblPaginationInfo.Location = new System.Drawing.Point(1001, 35);
             this.lblPaginationInfo.Name = "lblPaginationInfo";
-            this.lblPaginationInfo.Size = new System.Drawing.Size(55, 15);
+            this.lblPaginationInfo.Size = new System.Drawing.Size(67, 15);
             this.lblPaginationInfo.TabIndex = 4;
-            this.lblPaginationInfo.Text = "label4";
+            this.lblPaginationInfo.Text = "暂无数据";
             // 
             // btnLastPage
             // 
-            this.btnLastPage.Location = new System.Drawing.Point(953, 24);
+            this.btnLastPage.Location = new System.Drawing.Point(815, 28);
             this.btnLastPage.Name = "btnLastPage";
-            this.btnLastPage.Size = new System.Drawing.Size(75, 23);
+            this.btnLastPage.Size = new System.Drawing.Size(82, 29);
             this.btnLastPage.TabIndex = 3;
             this.btnLastPage.Text = "尾页";
             this.btnLastPage.UseVisualStyleBackColor = true;
@@ -344,9 +345,9 @@ namespace DataBaseViewWinForm
             // 
             // btnNextPage
             // 
-            this.btnNextPage.Location = new System.Drawing.Point(775, 24);
+            this.btnNextPage.Location = new System.Drawing.Point(684, 28);
             this.btnNextPage.Name = "btnNextPage";
-            this.btnNextPage.Size = new System.Drawing.Size(75, 23);
+            this.btnNextPage.Size = new System.Drawing.Size(87, 29);
             this.btnNextPage.TabIndex = 2;
             this.btnNextPage.Text = "后一页";
             this.btnNextPage.UseVisualStyleBackColor = true;
@@ -354,9 +355,9 @@ namespace DataBaseViewWinForm
             // 
             // btnPrevPage
             // 
-            this.btnPrevPage.Location = new System.Drawing.Point(570, 24);
+            this.btnPrevPage.Location = new System.Drawing.Point(546, 28);
             this.btnPrevPage.Name = "btnPrevPage";
-            this.btnPrevPage.Size = new System.Drawing.Size(75, 23);
+            this.btnPrevPage.Size = new System.Drawing.Size(93, 29);
             this.btnPrevPage.TabIndex = 1;
             this.btnPrevPage.Text = "前一页";
             this.btnPrevPage.UseVisualStyleBackColor = true;
@@ -364,9 +365,9 @@ namespace DataBaseViewWinForm
             // 
             // btnFirstPage
             // 
-            this.btnFirstPage.Location = new System.Drawing.Point(179, 24);
+            this.btnFirstPage.Location = new System.Drawing.Point(424, 28);
             this.btnFirstPage.Name = "btnFirstPage";
-            this.btnFirstPage.Size = new System.Drawing.Size(75, 23);
+            this.btnFirstPage.Size = new System.Drawing.Size(84, 29);
             this.btnFirstPage.TabIndex = 0;
             this.btnFirstPage.Text = "首页";
             this.btnFirstPage.UseVisualStyleBackColor = true;

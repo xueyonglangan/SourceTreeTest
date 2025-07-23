@@ -22,7 +22,8 @@ namespace DataBaseViewWinForm
     public partial class DataGetForm : Form
     {
         public string DataBaseWayFilePath = "C:\\Program Files\\DataBaseWays.ini";
-
+        public static int PageMode = 0;
+        
         // 分页相关变量
         private int _currentPage = 1;
         private int _pageSize = 22;
@@ -52,61 +53,41 @@ namespace DataBaseViewWinForm
         //查询时间段内对应料号的所有生产数据
         public void SearchProductDetail1()
         {
-            var startTime = StartTime1.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            var endTime = EndTime1.Value.AddSeconds(1).ToString("yyyy-MM-dd HH:mm:ss");
-            //string StageLeft = "StageLeft";
-            var productName = ProductNameText.Text;
+            // 清空表格
+            dataGridView1.DataSource = null;
+            dataGridView1.Columns.Clear();
+            dataGridView1.Rows.Clear();
 
+            var startTime = StartTime1.Value.ToString("yyyy-MM-dd HH:mm:ss").Replace("'", "''");
+            var endTime = EndTime1.Value.AddSeconds(1).ToString("yyyy-MM-dd HH:mm:ss").Replace("'", "''");
+            var productName = ProductNameText.Text.Replace("'", "''"); // 转义单引号
 
-            var sql = $"SELECT * FROM CompletedLayers WHERE PartNumber = '{productName}' AND StartTime BETWEEN '{startTime}' AND '{endTime}' ";
+            // 校验料号输入
+            if (string.IsNullOrEmpty(productName))
+            {
+                MessageBox.Show("请输入料号！");
+                return;
+            }
+
+            // 构建带条件的分页查询SQL
+            string sql = string.Format(@"
+        SELECT * FROM CompletedLayers 
+        WHERE PartNumber = '{0}' 
+          AND StartTime BETWEEN '{1}' AND '{2}' 
+        ORDER BY StartTime ASC",
+                productName, startTime, endTime
+            );
+
             try
             {
-
                 var DBname = CurrentDataBaseName.Text;
                 var connectstring = DatabaseFactory.DatabaseNameSwitch(DBname);
 
                 using (var connection = new SqliteDatabaseConnection(connectstring))
                 {
                     connection.Open();
-                    var data = connection.QueryAll<CompletedLayers>(sql);
-
-                    if (data.Any())
-                    {
-                        dataGridView1.AutoGenerateColumns = true;
-                        dataGridView1.DataSource = data;
-                    }
-                    else
-                    {
-                        MessageBox.Show("未查询到数据");
-                        dataGridView1.DataSource = null; // 清空网格
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"错误：{ex.Message}");
-            }
-
-        }
-        public void SearchProductDetail()
-        {
-            var startTime = StartTime1.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            var endTime = EndTime1.Value.AddSeconds(1).ToString("yyyy-MM-dd HH:mm:ss");
-            //string StageLeft = "StageLeft";
-            var productName = ProductNameText.Text;
-
-
-            var sql = $"SELECT * FROM CompletedLayers WHERE PartNumber = '{productName}' AND StartTime BETWEEN '{startTime}' AND '{endTime}' ";
-            try
-            {
-
-                var DBname = CurrentDataBaseName.Text;
-                var connectstring = DatabaseFactory.DatabaseNameSwitch(DBname);
-
-                using (var connection = new SqliteDatabaseConnection(connectstring))
-                {
-                    connection.Open();
-                    var result = connection.QueryWithPaging<CompletedLayers>(sql,_currentPage,_pageSize);
+                    // 执行分页查询（获取当前页数据和总记录数）
+                    var result = connection.QueryWithPaging<CompletedLayers>(sql, _currentPage, _pageSize);
                     var data = result.Item1;
                     _totalRecords = result.Item2;
                     _totalPages = (int)Math.Ceiling((double)_totalRecords / _pageSize);
@@ -117,11 +98,64 @@ namespace DataBaseViewWinForm
                         dataGridView1.Columns.Clear();
                         dataGridView1.DataSource = data;
 
+                        // 添加序号列并设置连续序号
+                        AddContinuousRowNumber();
+
+                        // 更新分页控件状态
+                        UpdatePaginationControls();
                     }
                     else
                     {
                         MessageBox.Show("未查询到数据");
-                        dataGridView1.DataSource = null; // 清空网格
+                        dataGridView1.DataSource = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"错误：{ex.Message}");
+            }
+        }
+        public void SearchProductDetail()
+        {
+            var startTime = StartTime1.Value.ToString("yyyy-MM-dd HH:mm:ss").Replace("'", "''");
+            var endTime = EndTime1.Value.AddSeconds(1).ToString("yyyy-MM-dd HH:mm:ss").Replace("'", "''");
+            var productName = ProductNameText.Text.Replace("'", "''");
+
+            // 构建带排序的SQL（分页必须有稳定排序）
+            var sql = string.Format(@"
+        SELECT * FROM CompletedLayers 
+        WHERE PartNumber = '{0}' AND StartTime BETWEEN '{1}' AND '{2}'
+        ORDER BY StartTime ASC", // 确保排序稳定
+                productName, startTime, endTime
+            );
+
+            try
+            {
+                var DBname = CurrentDataBaseName.Text;
+                var connectstring = DatabaseFactory.DatabaseNameSwitch(DBname);
+
+                using (var connection = new SqliteDatabaseConnection(connectstring))
+                {
+                    connection.Open();
+                    var result = connection.QueryWithPaging<CompletedLayers>(sql, _currentPage, _pageSize);
+                    var data = result.Item1;
+                    _totalRecords = result.Item2;
+                    _totalPages = (int)Math.Ceiling((double)_totalRecords / _pageSize);
+
+                    if (data != null && data.Count > 0)
+                    {
+                        dataGridView1.AutoGenerateColumns = true;
+                        dataGridView1.Columns.Clear();
+                        dataGridView1.DataSource = data;
+
+                        // 添加连续序号
+                        AddContinuousRowNumber();
+                    }
+                    else
+                    {
+                        MessageBox.Show("未查询到数据");
+                        dataGridView1.DataSource = null;
                     }
                 }
             }
@@ -130,6 +164,8 @@ namespace DataBaseViewWinForm
                 MessageBox.Show($"错误：{ex.Message}");
             }
 
+            // 更新分页控件状态（关键：确保每次查询后都更新）
+            UpdatePaginationControls();
         }
 
         //输出DataGridView中的数据到Excel表中
@@ -266,33 +302,39 @@ namespace DataBaseViewWinForm
         //查询时间段内料号按钮，分页查询      
         private void Search_Click(object sender, EventArgs e)
         {
+            PageMode = 0;
             _currentPage = 1;
             LoadDataWithPaging();
         }
         //查看详细数据按钮
         private void SearchDetailDataBtn_Click(object sender, EventArgs e)
         {
-            //清空表格
-            // 清空 DataGridView
+            PageMode = 1; // 设置为具体料号查询模式
+            _currentPage = 1; // 重置为第一页
+            _totalRecords = 0; // 重置总记录数
+            _totalPages = 0; // 重置总页数
+
+            // 清空表格
             dataGridView1.DataSource = null;
             dataGridView1.Columns.Clear();
             dataGridView1.Rows.Clear();
-
 
             var DBName = CurrentDataBaseName.Text;
             var partName = ProductNameText.Text;
             var connectionString = DatabaseFactory.DatabaseNameSwitch(DBName);
 
-            //判断料号栏是否为空
-            if (ProductNameText.Text == "")
+            // 判断料号栏是否为空
+            if (string.IsNullOrWhiteSpace(ProductNameText.Text))
             {
                 MessageBox.Show("请正确输入您要查询的料号！");
                 return;
             }
 
-            //显示数据
+            // 执行带分页的查询
             SearchProductDetail();
 
+            // 强制更新分页控件状态
+            UpdatePaginationControls();
         }
 
         //打印对应料号所有数据按钮
@@ -687,19 +729,8 @@ namespace DataBaseViewWinForm
                         // 设置数据源
                         dataGridView1.DataSource = data;
 
-                        #region 序号排序
-                        int totalRows = dataGridView1.Rows.Count;
-                        if (dataGridView1.AllowUserToAddRows)
-                            totalRows--;
-
-                        for (int i = 0; i < dataGridView1.Rows.Count; i++)
-                        {
-                            if (!dataGridView1.Rows[i].IsNewRow)
-                            {
-                                dataGridView1.Rows[i].Cells["RowNumber"].Value = i + 1;
-                            }
-                        }
-                        #endregion
+                        // 调用通用方法添加连续序号
+                        AddContinuousRowNumber();
 
                         // 更新分页导航控件状态
                         UpdatePaginationControls();
@@ -719,32 +750,33 @@ namespace DataBaseViewWinForm
         }
         private void UpdatePaginationControls()
         {
-            // 更新分页信息标签
+            // 显示当前分页信息
             lblPaginationInfo.Text = string.Format(
-                "第 {0} 页，共 {1} 页，{2} 条记录",
+                "第 {0} 页，共 {1} 页，总记录：{2} 条",
                 _currentPage,
                 _totalPages,
                 _totalRecords
             );
 
-            // 启用/禁用分页按钮
-            btnFirstPage.Enabled = _currentPage > 1;
-            btnPrevPage.Enabled = _currentPage > 1;
-            btnNextPage.Enabled = _currentPage < _totalPages;
-            btnLastPage.Enabled = _currentPage < _totalPages;
+            // 控制按钮状态（处理总页数为0的特殊情况）
+            bool hasData = _totalRecords > 0 && _totalPages > 0;
+            btnFirstPage.Enabled = hasData && _currentPage > 1;
+            btnPrevPage.Enabled = hasData && _currentPage > 1;
+            btnNextPage.Enabled = hasData && _currentPage < _totalPages;
+            btnLastPage.Enabled = hasData && _currentPage < _totalPages;
         }
-
+        //手动为表格添加列
         private void SetupDataGridViewColumns()
         {
             // 配置DataGridView列（保持原有配置）
             //序号
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "RowNumber",
-                HeaderText = "序号",
-                Width = 60,
-                ReadOnly = true
-            });
+            //dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+            //{
+            //    Name = "RowNumber",
+            //    HeaderText = "序号",
+            //    Width = 60,
+            //    ReadOnly = true
+            //});
 
             // 2. 用户列
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
@@ -899,6 +931,38 @@ namespace DataBaseViewWinForm
 
 
         }
+
+        /// <summary>
+        /// 为当前页数据添加连续序号（跨页连续）
+        /// </summary>
+        private void AddContinuousRowNumber()
+        {
+            // 检查是否已存在序号列，若存在则移除（避免重复）
+            if (dataGridView1.Columns.Contains("RowNumber"))
+            {
+                dataGridView1.Columns.Remove("RowNumber");
+            }
+
+            // 添加序号列（作为第一列）
+            DataGridViewTextBoxColumn rowNumberColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "RowNumber",
+                HeaderText = "序号",
+                Width = 60,
+                ReadOnly = true
+            };
+            dataGridView1.Columns.Insert(0, rowNumberColumn); // 插入到第一列
+
+            // 计算连续序号（偏移量 + 行索引 + 1）
+            int offset = (_currentPage - 1) * _pageSize;
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                if (!dataGridView1.Rows[i].IsNewRow)
+                {
+                    dataGridView1.Rows[i].Cells["RowNumber"].Value = offset + i + 1;
+                }
+            }
+        }
         #endregion
 
         #region 分页相关按钮
@@ -907,7 +971,15 @@ namespace DataBaseViewWinForm
             if (_currentPage > 1)
             {
                 _currentPage = 1;
-                LoadDataWithPaging();
+                if (PageMode == 0)
+                {
+                    LoadDataWithPaging();
+                }
+                else if (PageMode == 1)
+                {
+                    SearchProductDetail();
+                }
+                UpdatePaginationControls();
             }
         }
 
@@ -916,25 +988,53 @@ namespace DataBaseViewWinForm
             if (_currentPage > 1)
             {
                 _currentPage--;
-                LoadDataWithPaging();
+                // 根据当前模式执行对应查询
+                if (PageMode == 0)
+                {
+                    LoadDataWithPaging();
+                }
+                else if (PageMode == 1)
+                {
+                    SearchProductDetail();
+                }
+                // 强制刷新分页状态
+                UpdatePaginationControls();
             }
         }
 
         private void btnNextPage_Click(object sender, EventArgs e)
         {
-            if (_currentPage < _totalPages)
+            // 先检查总页数是否有效
+            if (_totalPages > 0 && _currentPage < _totalPages)
             {
                 _currentPage++;
-                LoadDataWithPaging();
+                if (PageMode == 0)
+                {
+                    LoadDataWithPaging();
+                }
+                else if (PageMode == 1)
+                {
+                    SearchProductDetail();
+                }
+                // 强制刷新分页状态
+                UpdatePaginationControls();
             }
         }
 
         private void btnLastPage_Click(object sender, EventArgs e)
         {
-            if (_currentPage < _totalPages)
+            if (_totalPages > 0 && _currentPage < _totalPages)
             {
                 _currentPage = _totalPages;
-                LoadDataWithPaging();
+                if (PageMode == 0)
+                {
+                    LoadDataWithPaging();
+                }
+                else if (PageMode == 1)
+                {
+                    SearchProductDetail();
+                }
+                UpdatePaginationControls();
             }
         }
         #endregion

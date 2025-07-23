@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "D:\\SourceTest\\DataBaseViewWinForm\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B6E3AB11-BF4B-4460-A923-E4E8E310DDB5}|DataBaseViewWinForm.csproj|d:\\sourcetest\\databaseviewwinform\\datagetform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B6E3AB11-BF4B-4460-A923-E4E8E310DDB5}|DataBaseViewWinForm.csproj|D:\\SourceTest\\DataBaseViewWinForm\\datagetform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B6E3AB11-BF4B-4460-A923-E4E8E310DDB5}|DataBaseViewWinForm.csproj|solutionrelative:datagetform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B6E3AB11-BF4B-4460-A923-E4E8E310DDB5}|DataBaseViewWinForm.csproj|D:\\SourceTest\\DataBaseViewWinForm\\datagetform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{B6E3AB11-BF4B-4460-A923-E4E8E310DDB5}|DataBaseViewWinForm.csproj|d:\\sourcetest\\databaseviewwinform\\datagetform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{B6E3AB11-BF4B-4460-A923-E4E8E310DDB5}|DataBaseViewWinForm.csproj|solutionrelative:datagetform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -106,7 +106,8 @@
               "RelativeToolTip": "DataGetForm.Designer.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAYwBkAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-20T07:37:08.473Z"
+              "WhenOpened": "2025-07-20T07:37:08.473Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -159,14 +160,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "DataGetForm.cs [Design]",
+              "Title": "DataGetForm.cs [\u8BBE\u8BA1]",
               "DocumentMoniker": "D:\\SourceTest\\DataBaseViewWinForm\\DataGetForm.cs",
               "RelativeDocumentMoniker": "DataGetForm.cs",
-              "ToolTip": "D:\\SourceTest\\DataBaseViewWinForm\\DataGetForm.cs [Design]",
-              "RelativeToolTip": "DataGetForm.cs [Design]",
+              "ToolTip": "D:\\SourceTest\\DataBaseViewWinForm\\DataGetForm.cs [\u8BBE\u8BA1]",
+              "RelativeToolTip": "DataGetForm.cs [\u8BBE\u8BA1]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-09T02:13:26.805Z",
-              "EditorCaption": " [Design]"
+              "EditorCaption": " [\u8BBE\u8BA1]"
             },
             {
               "$type": "Document",
@@ -176,7 +177,7 @@
               "RelativeDocumentMoniker": "DataGetForm.cs",
               "ToolTip": "D:\\SourceTest\\DataBaseViewWinForm\\DataGetForm.cs",
               "RelativeToolTip": "DataGetForm.cs",
-              "ViewState": "AgIAADIAAAAAAAAAAAAAAAkBAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAJoCAAAAAAAAAAAswP4CAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-09T02:39:17.386Z",
               "EditorCaption": ""
